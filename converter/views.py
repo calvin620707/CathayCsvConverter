@@ -19,7 +19,6 @@ def upload_file(request):
         if form.is_valid():
             ret = __convert_csv(request.FILES['file'])
 
-            # TODO: try to find a way to show data on web page which can be copied past on google sheet
             ret_list = []
             for row_date, values in ret.items():
                 ret_list.append((
