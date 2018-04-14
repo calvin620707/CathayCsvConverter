@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/2.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.0/ref/settings/
 """
-
+import logging
 import os
 
 import django_heroku
@@ -115,6 +115,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+logging.basicConfig(
+    format='[%(asctime)-15s] [%(levelname)s] [%(filename)s:%(lineno)s:%(funcName)s] %(message)s',
+    level=logging.INFO
+)
 
 # Configure Django App for Heroku.
 django_heroku.settings(locals())
