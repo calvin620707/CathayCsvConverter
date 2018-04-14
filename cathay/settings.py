@@ -121,5 +121,7 @@ logging.basicConfig(
     level=logging.INFO
 )
 
+HOUSE_RENT = 18000
+
 # Configure Django App for Heroku.
 django_heroku.settings(locals())

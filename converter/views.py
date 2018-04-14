@@ -1,10 +1,11 @@
 import csv
 import logging
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
+from datetime import datetime
 from io import TextIOWrapper
-from datetime import date, datetime
 
-from django.http import HttpResponseRedirect
+from django.conf import settings
+from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
@@ -17,8 +18,22 @@ def upload_file(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            __convert_csv(request.FILES['file'])
-            return HttpResponseRedirect('/')
+            ret = __convert_csv(request.FILES['file'])
+            resp = HttpResponse(content_type='text/csv')
+            resp['Content-Disposition'] = 'attachment; filename="output.csv"'
+
+            writer = csv.writer(resp)
+            for row_date, values in ret.items():
+                writer.writerow([
+                    row_date,
+                    settings.HOUSE_RENT,
+                    values.get('電費'),
+                    values.get('水費'),
+                    values.get('瓦斯'),
+                    values.get('中華電信'),
+                    values.get('koko卡費')
+                ])
+            return resp
     else:
         form = UploadFileForm()
     return render(request, 'converter/index.html', {'form': form})
@@ -56,5 +71,15 @@ def __convert_csv(in_f):
 
         row_date = datetime.strptime(row[0], '%Y%m%d').date()
         spent = int(row[1])
-        ret[row_date.strftime("%Y%m")].update({category: spent})
-    print(ret)
+        key = row_date.strftime("%Y/%m")
+
+        if ret.get(key, {}).get(category):
+            ret[key][category] += spent
+            continue
+
+        ret[key].update({category: spent})
+
+    ret = OrderedDict(sorted(ret.items(), key=lambda t: t[0]))
+
+    logging.info(ret)
+    return ret
