@@ -19,6 +19,21 @@ def upload_file(request):
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
             ret = __convert_csv(request.FILES['file'])
+
+            # TODO: try to find a way to show data on web page which can be copied past on google sheet
+            # ret_list = []
+            # for row_date, values in ret.items():
+            #     ret_list.append((
+            #         row_date,
+            #         settings.HOUSE_RENT,
+            #         values.get('電費'),
+            #         values.get('水費'),
+            #         values.get('瓦斯'),
+            #         values.get('中華電信'),
+            #         values.get('koko卡費')
+            #     ))
+            # return render(request, 'converter/results.html', {'ret': ret_list})
+
             resp = HttpResponse(content_type='text/csv')
             resp['Content-Disposition'] = 'attachment; filename="output.csv"'
 

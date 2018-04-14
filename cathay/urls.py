@@ -20,5 +20,5 @@ import converter.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', converter.views.upload_file)
+    path('', converter.views.upload_file, name='index')
 ]
