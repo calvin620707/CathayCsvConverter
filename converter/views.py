@@ -5,7 +5,6 @@ from datetime import datetime
 from io import TextIOWrapper
 
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
@@ -21,25 +20,9 @@ def upload_file(request):
             ret = __convert_csv(request.FILES['file'])
 
             # TODO: try to find a way to show data on web page which can be copied past on google sheet
-            # ret_list = []
-            # for row_date, values in ret.items():
-            #     ret_list.append((
-            #         row_date,
-            #         settings.HOUSE_RENT,
-            #         values.get('電費'),
-            #         values.get('水費'),
-            #         values.get('瓦斯'),
-            #         values.get('中華電信'),
-            #         values.get('koko卡費')
-            #     ))
-            # return render(request, 'converter/results.html', {'ret': ret_list})
-
-            resp = HttpResponse(content_type='text/csv')
-            resp['Content-Disposition'] = 'attachment; filename="output.csv"'
-
-            writer = csv.writer(resp)
+            ret_list = []
             for row_date, values in ret.items():
-                writer.writerow([
+                ret_list.append((
                     row_date,
                     settings.HOUSE_RENT,
                     values.get('電費'),
@@ -47,8 +30,18 @@ def upload_file(request):
                     values.get('瓦斯'),
                     values.get('中華電信'),
                     values.get('koko卡費')
-                ])
-            return resp
+                ))
+
+            row_count = len(ret_list)
+            ret_str = ""
+            for row in ret_list:
+                for value in row:
+                    if value:
+                        ret_str += str(value)
+                    ret_str += "\t"
+                ret_str += "\n"
+
+            return render(request, 'converter/results.html', {'ret': ret_str, 'row_count': row_count})
     else:
         form = UploadFileForm()
     return render(request, 'converter/index.html', {'form': form})

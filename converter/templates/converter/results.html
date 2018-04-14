@@ -5,26 +5,9 @@
     <title>Results</title>
 </head>
 <body>
-<table>
-    <thead>Date</thead>
-    <thead>Rent</thead>
-    <thead>電費</thead>
-    <thead>水費</thead>
-    <thead>瓦斯</thead>
-    <thead>中華電信</thead>
-    <thead>koko卡費</thead>
-    {% for row in ret %}
-        <tr>
-            {% for value in row %}
-                {% if value %}
-                    <td>{{ value }}</td>
-                {% else %}
-                    <td></td>
-                {% endif %}
-            {% endfor %}
-        </tr>
-    {% endfor %}
-</table>
+<textarea readonly rows="{{ row_count }}" cols="100">
+    {{ ret }}
+</textarea>
 <a href="{% url 'index' %}">Back</a>
 </body>
 </html>
