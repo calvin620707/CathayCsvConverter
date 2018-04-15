@@ -3,10 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Results</title>
+
 </head>
 <body>
-<textarea readonly rows="{{ row_count }}" cols="100">{{ ret }}</textarea>
+<textarea id="results" readonly rows="{{ row_count }}" cols="100">{{ ret }}</textarea>
 <br>
+<button onclick="copyResults()">Copy</button>
+<script>
+    function copyResults() {
+        /* Get the text field */
+        let copyText = document.getElementById("results");
+
+        /* Select the text field */
+        copyText.select();
+
+        /* Copy the text inside the text field */
+        document.execCommand("Copy");
+
+        /* Alert the copied text */
+        alert("Copied the text:\n" + copyText.value);
+    }
+</script>
 <a href="{% url 'index' %}">Back</a>
 </body>
 </html>
