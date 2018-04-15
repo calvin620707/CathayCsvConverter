@@ -2,7 +2,7 @@ import csv
 import logging
 from collections import defaultdict, OrderedDict
 from datetime import datetime
-from io import TextIOWrapper
+from io import TextIOWrapper, StringIO
 
 from django.conf import settings
 from django.shortcuts import render
@@ -19,26 +19,22 @@ def upload_file(request):
         if form.is_valid():
             ret = __convert_csv(request.FILES['file'])
 
-            ret_list = []
-            for row_date, values in ret.items():
-                ret_list.append((
-                    row_date,
-                    settings.HOUSE_RENT,
-                    values.get('電費'),
-                    values.get('水費'),
-                    values.get('瓦斯'),
-                    values.get('中華電信'),
-                    values.get('koko卡費')
-                ))
-
-            row_count = len(ret_list)
-            ret_str = ""
-            for row in ret_list:
-                for value in row:
-                    if value:
-                        ret_str += str(value)
-                    ret_str += "\t"
-                ret_str += "\n"
+            row_count = 0
+            with StringIO() as out_f:
+                writer = csv.writer(out_f, 'excel-tab')
+                for row_date, values in ret.items():
+                    row_count += 1
+                    writer.writerow((
+                        row_date,
+                        settings.HOUSE_RENT,
+                        values.get('電費'),
+                        values.get('水費'),
+                        values.get('瓦斯'),
+                        values.get('中華電信'),
+                        values.get('koko卡費')
+                    ))
+                out_f.seek(0)
+                ret_str = out_f.read()
 
             return render(request, 'converter/results.html', {'ret': ret_str, 'row_count': row_count})
     else:
